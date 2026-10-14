@@ -42,6 +42,27 @@ class Dataset:
 
 
 class Preprocessor:
+    # Training-set mean and population standard deviation; fixed for validation and test.
+    FEATURE_STATS = {
+        'Area': (52992.9001148, 29382.718634),
+        'Perimeter': (854.415982778, 214.814115276),
+        'MajorAxisLength': (319.752544836, 85.8317090184),
+        'MinorAxisLength': (202.19348921, 45.1686746697),
+        'AspectRation': (1.58176571463, 0.245367517971),
+        'Eccentricity': (0.750564210828, 0.0917729120933),
+        'ConvexArea': (53708.1843858, 29820.016134),
+        'EquivDiameter': (252.874034615, 59.3917387703),
+        'Extent': (0.749538450992, 0.0487143590125),
+        'Solidity': (0.987174165477, 0.00462893637659),
+        'roundness': (0.873734345218, 0.0595256139582),
+        'Compactness': (0.800191424835, 0.0614567431449),
+        'ShapeFactor1': (0.00656822913895, 0.00113437069712),
+        'ShapeFactor2': (0.00171966628705, 0.000595923539568),
+        'ShapeFactor3': (0.644083247657, 0.0986241128227),
+        'ShapeFactor4': (0.995107557259, 0.00433933766242),
+    }
+    LABELS = ('BARBUNYA', 'BOMBAY', 'CALI', 'DERMASON', 'HOROZ', 'SEKER', 'SIRA')
+
     def __init__(self, feature_columns: List, label_column: str, **kwargs):
         self.feature_columns = feature_columns
         self.label_column = label_column
@@ -63,7 +84,15 @@ class Preprocessor:
     # ! Update Preprocessor functions (preprocess_feature and select_labels)
     ##########################################################################
     def preprocess_features(self, data: np.ndarray) -> np.ndarray:
-        raise NotImplemented("!! Implement Preprocessor.preprocess_features function")
+        features = np.asarray(data, dtype=np.float64)
+        if not np.isfinite(features).all():
+            raise ValueError('Features must be finite')
+        mean, std = np.array([self.FEATURE_STATS[name] for name in self.feature_columns]).T
+        return ((features - mean) / std).astype(np.float32)
 
     def prepare_labels(self, data: pd.DataFrame) -> np.ndarray:
-        raise NotImplemented("!! Implement Preprocessor.prepare_labels function")
+        labels = data[self.label_column].map({name: i for i, name in enumerate(self.LABELS)})
+        if labels.isna().any():
+            unknown = data.loc[labels.isna(), self.label_column].unique().tolist()
+            raise ValueError(f'Unknown class labels: {unknown}')
+        return np.eye(len(self.LABELS), dtype=np.float32)[labels.to_numpy(dtype=np.int64)]
