@@ -1,7 +1,7 @@
 # CMPE 460 / 2026-2027 Fall -- Assignment 01
 
-Student ID: ...
-Student Name: ...
+Student ID: 12152053
+Student Name: Semih Berkay Öztürk
 
 W&B Report Link: https://wandb.ai/semioz/cmpe460-assignment01/reports/CMPE-460-Assignment-01---Feedforward-Neural-Network-Experiments--VmlldzoxODExMDI0NQ==?accessToken=emchnbul5zewrvwkaxwy8wv58k87eudiz0db2gg27136qq4ndxc002t68ytwq3xb
 
