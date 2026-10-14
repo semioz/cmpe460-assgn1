@@ -40,7 +40,13 @@ class Model(torch.nn.Module):
     # ! Update Model functions (init_model and forward)
     ##########################################################################
     def init_model(self):
-        raise NotImplementedError("!! Implementation for Model.init_model is missing...")
+        self.model = torch.nn.Sequential(
+            torch.nn.Linear(self.input_dim, 64),
+            torch.nn.ReLU(),
+            torch.nn.Linear(64, 32),
+            torch.nn.ReLU(),
+            torch.nn.Linear(32, self.output_dim),
+        )
 
     def forward(self, x):
-        raise NotImplementedError("!! Implementation for Model.forward is missing")
+        return self.model(x)
