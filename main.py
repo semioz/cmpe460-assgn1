@@ -23,12 +23,15 @@ def main():
 
     best_f1 = 0.0
     experiments = [
-        {'learning_rate': 1e-3, 'weight_decay': 0, 'batch_size': 32},
-        {'learning_rate': 5e-4, 'weight_decay': 1e-4, 'batch_size': 64},
-        {'learning_rate': 2e-3, 'weight_decay': 1e-4, 'batch_size': 32},
+        {'learning_rate': 1e-3, 'weight_decay': 0, 'batch_size': 32, 'epochs': 30, 'seed': 42},
+        {'learning_rate': 5e-4, 'weight_decay': 1e-4, 'batch_size': 64, 'epochs': 30, 'seed': 42},
+        {'learning_rate': 2e-3, 'weight_decay': 1e-4, 'batch_size': 32, 'epochs': 30, 'seed': 42},
+        {'learning_rate': 1e-3, 'weight_decay': 1e-4, 'batch_size': 32, 'epochs': 50, 'seed': 42},
+        {'learning_rate': 2e-3, 'weight_decay': 1e-4, 'batch_size': 32, 'epochs': 50, 'seed': 43},
+        {'learning_rate': 5e-4, 'weight_decay': 1e-4, 'batch_size': 64, 'epochs': 60, 'seed': 42},
     ]
     for config in experiments:
-        torch.manual_seed(42)
+        torch.manual_seed(config['seed'])
         training_data = Dataset('./data/train.csv', preprocessor, config['batch_size'], True).prepare_data()
         model = Model(input_dim=16, output_dim=7, device=device)
         with torch.no_grad():
@@ -36,8 +39,8 @@ def main():
             model.input_std.copy_(std.to(device))
         optimizer = torch.optim.Adam(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
         trainer = Trainer(model, optimizer, torch.nn.CrossEntropyLoss(), 'cmpe460-assignment01', device,
-                          entity='semioz', config={**config, 'epochs': 30})
-        best_f1 = trainer.train(training_data, validation_data, epochs=30, best_f1=best_f1)
+                          entity='semioz', config=config)
+        best_f1 = trainer.train(training_data, validation_data, epochs=config['epochs'], best_f1=best_f1)
         print(f"{config}: best validation evaluator F1 = {best_f1:.4f}", flush=True)
 
 

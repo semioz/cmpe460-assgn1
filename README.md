@@ -9,4 +9,4 @@ Install: `pip install torch pandas numpy scikit-learn wandb`
 Train: `python main.py` (requires a W&B login; saves the best checkpoint to `saved_objects/model.pt`)
 Validate on a CUDA machine: `python run_test.py --valid`
 
-Validation evaluator F1: 0.926465 (three 30-epoch hyperparameter experiments). Test-set score is unknown.
+Validation evaluator F1: 0.936302 (best of six hyperparameter experiments). Test-set score is unknown.
