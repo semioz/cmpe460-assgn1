@@ -29,7 +29,7 @@ class Model(torch.nn.Module):
 
         # Load model if pretrained model is available
         if pretrained_path != None:
-            self.load_state_dict(torch.load(self.pretrained_path, weights_only=True))
+            self.load_state_dict(torch.load(self.pretrained_path, map_location=self.device, weights_only=True))
 
         self.to(self.device)
 
@@ -40,6 +40,8 @@ class Model(torch.nn.Module):
     # ! Update Model functions (init_model and forward)
     ##########################################################################
     def init_model(self):
+        self.register_buffer('input_mean', torch.zeros(self.input_dim))
+        self.register_buffer('input_std', torch.ones(self.input_dim))
         self.model = torch.nn.Sequential(
             torch.nn.Linear(self.input_dim, 64),
             torch.nn.ReLU(),
@@ -49,4 +51,4 @@ class Model(torch.nn.Module):
         )
 
     def forward(self, x):
-        return self.model(x)
+        return self.model((x - self.input_mean) / self.input_std)
