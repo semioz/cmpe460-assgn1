@@ -40,6 +40,7 @@ class Trainer:
 
                 score = eval_result['f1_evaluator']
                 run_best = max(run_best, score)
+                # we're saving only when this run beats the best checkpoint across experiments
                 if score > best_f1:
                     best_f1 = score
                     self.model.save('./saved_objects/model.pt')
@@ -75,6 +76,7 @@ class Trainer:
                 actual_cpu, predicted_cpu = targets.cpu(), predicted.cpu()
                 labels.append(actual_cpu)
                 predictions.append(predicted_cpu)
+                # provided evaluator needs to average macro f1 separately over batches.
                 batch_f1 += f1_score(actual_cpu.numpy(), predicted_cpu.numpy(), average='macro')
         return {
             'loss': total_loss / count,

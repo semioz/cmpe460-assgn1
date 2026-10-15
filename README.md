@@ -7,6 +7,8 @@ W&B Report Link: https://wandb.ai/semioz/cmpe460-assignment01/reports/CMPE-460-A
 
 Install: `pip install torch pandas numpy scikit-learn wandb`
 Train: `python main.py` (requires a W&B login; saves the best checkpoint to `saved_objects/model.pt`)
+
+Training environment: I chose modal.com and used T4 GPU because they're generous to give monthly 30$ credits for any gpus.
 Validate on a CUDA machine: `python run_test.py --valid`
 
 Validation evaluator F1: 0.936302 (best of six hyperparameter experiments). Test-set score is unknown.

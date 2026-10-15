@@ -42,6 +42,7 @@ class Dataset:
 
 
 class Preprocessor:
+    # coming from the 'class' field from train.csv dataset
     LABELS = ('BARBUNYA', 'BOMBAY', 'CALI', 'DERMASON', 'HOROZ', 'SEKER', 'SIRA')
 
     def __init__(self, feature_columns: List, label_column: str, **kwargs):
@@ -65,12 +66,16 @@ class Preprocessor:
     # ! Update Preprocessor functions (preprocess_feature and select_labels)
     ##########################################################################
     def preprocess_features(self, data: np.ndarray) -> np.ndarray:
+        # we need to convert the numerical features from csv to a reusable format that pytorch can use like fp32.
         features = np.asarray(data, dtype=np.float32)
+        # cacthing the nan or infinite values before sending request to the model and getting error.
         if not np.isfinite(features).all():
             raise ValueError('Features must be finite')
         return features
 
     def prepare_labels(self, data: pd.DataFrame) -> np.ndarray:
+        # we need to transformer string labels to numerical features which makes the training easier instead of dealing with strings.
+        # as known as 7 dimension one hot encoding. barbunya-->0, bombay-->1 etc.
         labels = data[self.label_column].map({name: i for i, name in enumerate(self.LABELS)})
         if labels.isna().any():
             unknown = data.loc[labels.isna(), self.label_column].unique().tolist()

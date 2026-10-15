@@ -1,3 +1,7 @@
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# ! This is a sample file for your experiments. You can change
+# !     this file as you wish.
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 from data_utils import Preprocessor, Dataset
 from trainer_utils import Trainer
 from model import Model
@@ -15,12 +19,14 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     preprocessor = Preprocessor(feature_columns=features, label_column='Class')
     validation_data = Dataset('./data/validation.csv', preprocessor, 32, False).prepare_data()
+    # fit normalization on training data only; the saved model reuses it at evaluation.
     training_data = Dataset('./data/train.csv', preprocessor, 32, False).prepare_data()
     train_features = training_data.dataset.tensors[0]
     mean = train_features.mean(dim=0)
     std = train_features.std(dim=0, unbiased=False).clamp_min(1e-6)
     os.makedirs('saved_objects', exist_ok=True)
 
+    # we need to kkeep the best validation checkpoint across all experiments.
     best_f1 = 0.0
     experiments = [
         {'learning_rate': 1e-3, 'weight_decay': 0, 'batch_size': 32, 'epochs': 30, 'seed': 42},

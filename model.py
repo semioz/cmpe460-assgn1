@@ -29,6 +29,7 @@ class Model(torch.nn.Module):
 
         # Load model if pretrained model is available
         if pretrained_path != None:
+            # load cuda-saved weights on the requested device, including cpu.
             self.load_state_dict(torch.load(self.pretrained_path, map_location=self.device, weights_only=True))
 
         self.to(self.device)
